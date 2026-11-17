@@ -62,4 +62,13 @@ class ClientService
 		$data['phone'] = trim($data['phone'] ?? '') ?: null;
 		return ClientModel::update($id, $data);
 	}
+
+	// Valida y elimina un cliente
+	public static function delete(int $id): bool
+	{
+		if ($id <= 0) {
+			throw new InvalidArgumentException('ID no válido');
+		}
+		return ClientModel::delete($id);
+	}
 }

@@ -129,4 +129,36 @@ class ClientController
 			];
 		}
 	}
+
+	// Atiende la eliminación de un cliente
+	public static function destroy(?array $data = null, ?int $id = null): array
+	{
+		try {
+			$deleted = ClientService::delete($id ?? 0);
+			if (!$deleted) {
+				http_response_code(404);
+				return [
+					'success' => false,
+					'message' => 'Cliente no encontrado'
+				];
+			}
+			return [
+				'success' => true,
+				'message' => 'Cliente eliminado correctamente'
+			];
+		} catch (InvalidArgumentException $error) {
+			http_response_code(422);
+			return [
+				'success' => false,
+				'message' => $error->getMessage()
+			];
+		} catch (Throwable $error) {
+			error_log('Error en ClientController: ' . $error->getMessage());
+			http_response_code(500);
+			return [
+				'success' => false,
+				'message' => 'Error interno del servidor'
+			];
+		}
+	}
 }

@@ -53,4 +53,13 @@ class ClientModel
 		// Indica si se modificó alguna fila
 		return $query->rowCount() > 0;
 	}
+
+	//  Elimina un cliente por su ID
+	public static function delete(int $id): bool
+	{
+		$pdo = require __DIR__ . '/../config/database.php';
+		$query = $pdo->prepare("DELETE FROM clients WHERE id=:id");
+		$query->execute(['id' => $id]);
+		return $query->rowCount() > 0;
+	}
 }
