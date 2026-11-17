@@ -1,0 +1,8 @@
+# Dependencias instaladas por Composer.
+backend/vendor/
+# Credenciales y configuración privada.
+backend/.env
+# Archivos de registro.
+backend/logs/*.log
+# Archivos temporales.
+*.tmp
