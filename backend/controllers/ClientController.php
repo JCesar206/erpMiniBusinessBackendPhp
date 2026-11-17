@@ -23,4 +23,39 @@ class ClientController
 			];
 		}
 	}
+
+	// Atiende las solicitudes para registrar clientes
+	public static function store(array $data): array
+	{
+		try {
+			// Solicitamos al Service registrar el cliente
+			$id = ClientService::create($data);
+			http_response_code(201);
+			return [
+				'success' => true,
+				'message' => 'Cliente registrado correctamente',
+				'id' => $id
+			];
+		} catch (InvalidArgumentException $error) {
+			http_response_code(422);
+			return [
+				'success' => false,
+				'message' => $error->getMessage()
+			];
+		} catch (PDOException $error) {
+			error_log('Error SQL en ClientController: ' . $error->getMessage());
+			http_response_code(500);
+			return [
+				'success' => false,
+				'message' => 'No fue posible registrar el cliente'
+			];
+		} catch (Throwable $error) {
+			error_log('Error en ClientController: ' . $error->getMessage());
+			http_response_code(500);
+			return [
+				'success' => false,
+				'message' > 'Error interno del servidor'
+			];
+		}
+	}
 }

@@ -8,4 +8,5 @@ return [
 	'GET /api/health/db' => [HealthController::class, 'database'],
 	'POST /api/health/echo' => [HealthController::class, 'echoData'],
 	'GET /api/clients' => [ClientController::class, 'index'],
+	'POST /api/clients' => [ClientController::class, 'store'],
 ];
