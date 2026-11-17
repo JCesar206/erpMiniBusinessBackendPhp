@@ -31,4 +31,13 @@ class ClientService
 		// Delegamos el registro al Model
 		return ClientModel::create($data);
 	}
+
+	// Consulta un cliente por ID
+	public static function getById(int $id): ?array
+	{
+		if ($id <= 0) {
+			throw new InvalidArgumentException('ID no válido');
+		}
+		return ClientModel::getById($id);
+	}
 }

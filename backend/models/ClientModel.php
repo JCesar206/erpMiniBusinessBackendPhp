@@ -28,4 +28,14 @@ class ClientModel
 		// Devolvemos el ID del cliente recién creado
 		return (int) $pdo->lastInsertId();
 	}
+
+	// Busca un cliente por su identificador
+	public static function getById(int $id): ?array
+	{
+		$pdo = require __DIR__ . '/../config/database.php';
+		$query = $pdo->prepare("SELECT id, name, email, phone, created_at FROM clients WHERE id=:id");
+		$query->execute(['id' => $id]);
+		// Devuelve el cliente o null si no existe
+		return $query->fetch() ?: null;
+	}
 }

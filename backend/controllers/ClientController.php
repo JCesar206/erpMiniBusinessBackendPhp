@@ -58,4 +58,36 @@ class ClientController
 			];
 		}
 	}
+
+	// Atiende la consulta individual de un cliente
+	public static function show(?array $data = null, ?int $id = null): array
+	{
+		try {
+			$client = ClientService::getById($id ?? 0);
+			if ($client === null) {
+				http_response_code(404);
+				return [
+					'success' => false,
+					'message' => 'Cliente no encontrado'
+				];
+			}
+			return [
+				'success' => true,
+				'data' => $client
+			];
+		} catch (InvalidArgumentException $error) {
+			http_response_code(422);
+			return [
+				'success' => false,
+				'message' => $error->getMessage()
+			];
+		} catch (Throwable $error) {
+			error_log('Error en ClientController: ' . $error->getMessage());
+			http_response_code(500);
+			return [
+				'success' => false,
+				'message' => 'Error interno del servidor'
+			];
+		}
+	}
 }
