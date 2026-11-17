@@ -90,4 +90,43 @@ class ClientController
 			];
 		}
 	}
+
+	// Atiende la actualización de un cliente.
+	public static function update(array $data, ?int $id = null): array
+	{
+		try {
+			$updated = ClientService::update($id ?? 0, $data);
+			if (!$updated) {
+				http_response_code(404);
+				return [
+					'success' => false,
+					'message' => 'Cliente no encontrado o sin cambios'
+				];
+			}
+			return [
+				'success' => true,
+				'message' => 'Cliente actualizado correctamente'
+			];
+		} catch (InvalidArgumentException $error) {
+			http_response_code(422);
+			return [
+				'success' => false,
+				'message' => $error->getMessage()
+			];
+		} catch (PDOException $error) {
+			error_log('Error SQL en ClientController: ' . $error->getMessage());
+			http_response_code(500);
+			return [
+				'success' => false,
+				'message' => 'No fue posible actualizar el cliente'
+			];
+		} catch (Throwable $error) {
+			error_log('Error en ClientController: ' . $error->getMessage());
+			http_response_code(500);
+			return [
+				'success' => false,
+				'message' => 'Error interno del servidor'
+			];
+		}
+	}
 }

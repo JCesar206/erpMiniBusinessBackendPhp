@@ -10,4 +10,5 @@ return [
 	'GET /api/clients' => [ClientController::class, 'index'],
 	'POST /api/clients' => [ClientController::class, 'store'],
 	'GET /api/clients/{id}' => [ClientController::class, 'show'],
+	'PUT /api/clients/{id}' => [ClientController::class, 'update'],
 ];

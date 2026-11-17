@@ -40,4 +40,26 @@ class ClientService
 		}
 		return ClientModel::getById($id);
 	}
+
+	// Valida y actualiza un cliente.
+	public static function update(int $id, array $data): bool
+	{
+		if ($id <= 0) {
+			throw new InvalidArgumentException('ID no válido');
+		}
+
+		$name = trim($data['name'] ?? '');
+		if ($name === '') {
+			throw new InvalidArgumentException('El nombre es obligatorio');
+		}
+		$email = trim($data['email'] ?? '');
+		if ($email !== '' && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+			throw new InvalidArgumentException('El correo electrónico no es válido');
+		}
+
+		$data['name'] = $name;
+		$data['email'] = $email !== '' ? $email : null;
+		$data['phone'] = trim($data['phone'] ?? '') ?: null;
+		return ClientModel::update($id, $data);
+	}
 }

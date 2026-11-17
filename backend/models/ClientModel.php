@@ -38,4 +38,19 @@ class ClientModel
 		// Devuelve el cliente o null si no existe
 		return $query->fetch() ?: null;
 	}
+
+	// Actualiza los datos de un cliente
+	public static function update(int $id, array $data): bool
+	{
+		$pdo = require __DIR__ . '/../config/database.php';
+		$query = $pdo->prepare("UPDATE clients SET name=:name, email=:email, phone=:phone WHERE id=:id");
+		$query->execute([
+			'id' => $id,
+			'name' => $data['name'],
+			'email' => $data['email'],
+			'phone' => $data['phone']
+		]);
+		// Indica si se modificó alguna fila
+		return $query->rowCount() > 0;
+	}
 }
