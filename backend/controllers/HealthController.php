@@ -1,25 +1,26 @@
 <?php
+// Cargamos el Service encargado de la lógica
+require_once __DIR__ . '/../services/HealthService.php';
 class HealthController
 {
-	// Comprueba que la API está funcionando
+	// Devuelve el estado general de la API
 	public static function check(?array $data = null): array
 	{
-		return [
-			'success' => true,
-			'message' => 'API funcionando'
-		];
+		return HealthService::check();
 	}
-	// Comprueba que PHP puede consultar MariaDB
+	// Comprueba la conexión con la base de datos
 	public static function database(?array $data = null): array
 	{
 		try {
-			$pdo = require __DIR__ . '/../config/database.php';
-			$pdo->query('SELECT 1');
+			// Delegamos la comprobación al Service
+			HealthService::checkDatabase();
 			return [
 				'success' => true,
 				'database' => 'connected'
 			];
 		} catch (Throwable $error) {
+			// Registramos el error en la terminal del servidor
+			error_log('Error en HealthService: ' . $error->getMessage());
 			http_response_code(503);
 			return [
 				'success' => false,
@@ -27,13 +28,12 @@ class HealthController
 			];
 		}
 	}
-
-	// Devuelve los datos después de pasar por el Middleware
+	// Devuelve los datos recibidos después del Middleware
 	public static function echoData(array $data): array
 	{
 		return [
 			'success' => true,
-			'message' => 'JSON recibido corretamente',
+			'message' => 'JSON recibido correctamente',
 			'received' => $data
 		];
 	}

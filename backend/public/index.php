@@ -1,25 +1,38 @@
 <?php
-// Indicamos que todas las respuestas serán JSON
+// Definimos el formato de nuestras respuestas.
 header('Content-Type: application/json; charset=utf-8');
-// Obtenemos el método HTTP y la ruta solicitada
+// Obtenemos el método y la ruta solicitada
 $method = $_SERVER['REQUEST_METHOD'];
 $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-// Cargamos las rutas registradas
+// Cargamos las rutas y el Middleware
 $routes = require __DIR__ . '/../routes/api.php';
-// Construimos la llave para localizar la ruta
+require_once __DIR__ . '/../middleware/JsonMiddleware.php';
+// Construimos la identificación de la ruta
 $routeKey = "$method $path";
-// Comprobamos si existe la ruta solicitada
+// Comprobamos si la ruta existe
 if (!isset($routes[$routeKey])) {
 	http_response_code(404);
 	echo json_encode([
-		'succes' => false,
+		'success' => false,
 		'message' => 'Ruta no encontrada'
 	]);
 	exit;
 }
-// Recuperamos el controlador y su método
+// Ejecutamos Middleware antes de llegar al Controller
+$middlewareResult = JsonMiddleware::handle();
+// Si Middleware detecta un error, detenemos la solicitud.
+if ($middlewareResult['error']) {
+	http_response_code($middlewareResult['status']);
+	echo json_encode([
+		'success' => false,
+		'message' => $middlewareResult['message']
+	]);
+	exit;
+}
+// Recuperamos el Controller y su método
 [$controller, $action] = $routes[$routeKey];
-// Ejecuatamos la acción correspondiente
-$response = $controller::$action();
-// Enviamos la respuesta JSON
+// Entregamos al Controller los datos validados
+$requestData = $middlewareResult['data'];
+$response = $controller::$action($requestData);
+// Enviamos la respuesta
 echo json_encode($response);
