@@ -44,23 +44,32 @@ class ClientService
 	// Valida y actualiza un cliente.
 	public static function update(int $id, array $data): bool
 	{
+		// Validamos el ID
 		if ($id <= 0) {
 			throw new InvalidArgumentException('ID no válido');
 		}
-
+		// Validamos el nombre
 		$name = trim($data['name'] ?? '');
 		if ($name === '') {
 			throw new InvalidArgumentException('El nombre es obligatorio');
 		}
+		// Validamos el correo
 		$email = trim($data['email'] ?? '');
 		if ($email !== '' && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
 			throw new InvalidArgumentException('El correo electrónico no es válido');
 		}
-
+		// Normalizamos los datos
 		$data['name'] = $name;
 		$data['email'] = $email !== '' ? $email : null;
 		$data['phone'] = trim($data['phone'] ?? '') ?: null;
-		return ClientModel::update($id, $data);
+		// Comprobamos que el cliente exista
+		$client = ClientModel::getById($id);
+		if ($client === null) {
+			return false;
+		}
+		// Actualizamos los datos, No importa si los valores son identicos a los anteriores
+		ClientModel::update($id, $data);
+		return true;
 	}
 
 	// Valida y elimina un cliente

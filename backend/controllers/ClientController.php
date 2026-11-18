@@ -1,164 +1,67 @@
 <?php
-// Cargamos el Service de clientes
+// Cargamos el service de clientes
 require_once __DIR__ . '/../services/ClientService.php';
 class ClientController
 {
-	// Atiende la solicitud para consultar clientes
+	// Consulta todos los clientes
 	public static function index(?array $data = null): array
 	{
-		try {
-			// Solicitamos los clientes al Service
-			$clients = ClientService::getAll();
-			return [
-				'success' => true,
-				'total' => count($clients),
-				'data' => $clients
-			];
-		} catch (Throwable $error) {
-			error_log('Error en ClientController: ' . $error->getMessage());
-			http_response_code(500);
-			return [
-				'success' => false,
-				'message' => 'Error al consultar los clientes'
-			];
-		}
+		$clients = ClientService::getAll();
+		return [
+			'success' => true,
+			'total' => count($clients),
+			'data' => $clients
+		];
 	}
 
-	// Atiende las solicitudes para registrar clientes
+	// Registra un nuevo cliente
 	public static function store(array $data): array
 	{
-		try {
-			// Solicitamos al Service registrar el cliente
-			$id = ClientService::create($data);
-			http_response_code(201);
-			return [
-				'success' => true,
-				'message' => 'Cliente registrado correctamente',
-				'id' => $id
-			];
-		} catch (InvalidArgumentException $error) {
-			http_response_code(422);
-			return [
-				'success' => false,
-				'message' => $error->getMessage()
-			];
-		} catch (PDOException $error) {
-			error_log('Error SQL en ClientController: ' . $error->getMessage());
-			http_response_code(500);
-			return [
-				'success' => false,
-				'message' => 'No fue posible registrar el cliente'
-			];
-		} catch (Throwable $error) {
-			error_log('Error en ClientController: ' . $error->getMessage());
-			http_response_code(500);
-			return [
-				'success' => false,
-				'message' > 'Error interno del servidor'
-			];
-		}
+		$id = ClientService::create($data);
+		http_response_code(201);
+		return [
+			'success' => true,
+			'message' => 'Cliente registrado correctamente',
+			'id' => $id
+		];
 	}
 
-	// Atiende la consulta individual de un cliente
+	// Consulta un cliente por su ID
 	public static function show(?array $data = null, ?int $id = null): array
 	{
-		try {
-			$client = ClientService::getById($id ?? 0);
-			if ($client === null) {
-				http_response_code(404);
-				return [
-					'success' => false,
-					'message' => 'Cliente no encontrado'
-				];
-			}
-			return [
-				'success' => true,
-				'data' => $client
-			];
-		} catch (InvalidArgumentException $error) {
-			http_response_code(422);
-			return [
-				'success' => false,
-				'message' => $error->getMessage()
-			];
-		} catch (Throwable $error) {
-			error_log('Error en ClientController: ' . $error->getMessage());
-			http_response_code(500);
-			return [
-				'success' => false,
-				'message' => 'Error interno del servidor'
-			];
+		$client = ClientService::getById($id ?? 0);
+		if ($client === null) {
+			throw new HttpException('Cliente no encontrado', 404);
 		}
+		return [
+			'success' => true,
+			'message' => $client
+		];
 	}
 
-	// Atiende la actualización de un cliente.
+	// Actualiza un cliente
 	public static function update(array $data, ?int $id = null): array
 	{
-		try {
-			$updated = ClientService::update($id ?? 0, $data);
-			if (!$updated) {
-				http_response_code(404);
-				return [
-					'success' => false,
-					'message' => 'Cliente no encontrado o sin cambios'
-				];
-			}
-			return [
-				'success' => true,
-				'message' => 'Cliente actualizado correctamente'
-			];
-		} catch (InvalidArgumentException $error) {
-			http_response_code(422);
-			return [
-				'success' => false,
-				'message' => $error->getMessage()
-			];
-		} catch (PDOException $error) {
-			error_log('Error SQL en ClientController: ' . $error->getMessage());
-			http_response_code(500);
-			return [
-				'success' => false,
-				'message' => 'No fue posible actualizar el cliente'
-			];
-		} catch (Throwable $error) {
-			error_log('Error en ClientController: ' . $error->getMessage());
-			http_response_code(500);
-			return [
-				'success' => false,
-				'message' => 'Error interno del servidor'
-			];
+		$updated = ClientService::update($id ?? 0, $data);
+		if (!$updated) {
+			throw new HttpException('Cliente no encontrado o sin cambios', 404);
 		}
+		return [
+			'success' => true,
+			'message' => 'Cliente actualizado correctamente'
+		];
 	}
 
-	// Atiende la eliminación de un cliente
+	// Elimina un cliente
 	public static function destroy(?array $data = null, ?int $id = null): array
 	{
-		try {
-			$deleted = ClientService::delete($id ?? 0);
-			if (!$deleted) {
-				http_response_code(404);
-				return [
-					'success' => false,
-					'message' => 'Cliente no encontrado'
-				];
-			}
-			return [
-				'success' => true,
-				'message' => 'Cliente eliminado correctamente'
-			];
-		} catch (InvalidArgumentException $error) {
-			http_response_code(422);
-			return [
-				'success' => false,
-				'message' => $error->getMessage()
-			];
-		} catch (Throwable $error) {
-			error_log('Error en ClientController: ' . $error->getMessage());
-			http_response_code(500);
-			return [
-				'success' => false,
-				'message' => 'Error interno del servidor'
-			];
+		$deleted = ClientService::delete($id ?? 0);
+		if (!$deleted) {
+			throw new HttpException('Cliente no encontrado', 404);
 		}
+		return [
+			'success' => true,
+			'message' => 'Cliente eliminado correctamente'
+		];
 	}
 }
