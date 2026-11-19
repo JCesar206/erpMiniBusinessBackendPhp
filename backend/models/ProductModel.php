@@ -5,7 +5,7 @@ class ProductModel
 	public static function getAll(): array
 	{
 		$pdo = require __DIR__ . '/../config/database.php';
-		$query = $pdo->query("SELECT id, name, description, price, stock, created_at FROM products ORDER By id DESC");
+		$query = $pdo->query("SELECT id, name, description, price, stock, created_at FROM products ORDER BY id DESC");
 		return $query->fetchAll();
 	}
 
@@ -13,7 +13,7 @@ class ProductModel
 	public static function create(array $data): int
 	{
 		$pdo = require __DIR__ . '/../config/database.php';
-		$query = $pdo->prepare("INSERT INTO products (name, description, price, stock) VALUES (:name, :description, :price, :stock");
+		$query = $pdo->prepare("INSERT INTO products (name, description, price, stock) VALUES (:name, :description, :price, :stock)");
 		$query->execute([
 			'name' => $data['name'],
 			'description' => $data['description'],
