@@ -1,0 +1,13 @@
+CREATE TABLE invoices (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    client_id INT UNSIGNED NOT NULL,
+    total DECIMAL(12,2) NOT NULL DEFAULT 0.00,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_invoices_client
+        FOREIGN KEY (client_id)
+        REFERENCES clients(id)
+        ON DELETE RESTRICT
+) ENGINE=InnoDB
+DEFAULT CHARSET=utf8mb4
+COLLATE=utf8mb4_unicode_ci;
